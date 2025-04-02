@@ -8,7 +8,13 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.use(bodyParser.json({ limit: '2mb' }));
 
 // Movie list
@@ -31,6 +37,9 @@ const upload = multer({ storage });
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.post('/upload', upload.single('image'), (req, res) => {
+
+  res.setHeader('Access-Control-Allow-Origin', '*'); // 👈 Add this line
+
 const imageUrl = `https://movie-backend.onrender.com/uploads/${req.file.filename}`;
 
   res.json({ imageUrl });
