@@ -6,6 +6,17 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
+
+const cors = require("cors");
+
+const corsOptions = {
+  origin: "http://localhost:8080",
+  credentials: true,
+  optionSuccessStatus: 200
+};
+
+app.use(cors(corsOptions))
+
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
@@ -13,6 +24,13 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
+
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.sendStatus(200);
+});
 
 app.use(bodyParser.json({ limit: '2mb' }));
 
