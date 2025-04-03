@@ -6,14 +6,13 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
+}));
 
 app.options('*', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -44,11 +43,9 @@ const upload = multer({ storage });
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-  res.setHeader('Access-Control-Allow-Origin', '*'); // 👈 Add this line
-
-const imageUrl = `https://movie-backend.onrender.com/uploads/${req.file.filename}`;
-
+  const imageUrl = `https://movie-backend.onrender.com/uploads/${req.file.filename}`;
   res.json({ imageUrl });
 });
 
